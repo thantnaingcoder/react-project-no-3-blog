@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+
 import {
 	Card,
 	CardContent,
@@ -13,28 +14,44 @@ import { useNavigate } from "react-router-dom";
 import { BackgroundBeamsDemo } from "@/components/animation-line";
 import { HoverBorderGradientDemo } from "@/components/hover-border";
 import { BackgroundGradientDemo } from "@/components/background-gradient";
+import { useRef } from "react";
 
 export default function Home() {
 	const nav = useNavigate();
+	const sectionRef = useRef<HTMLDivElement>(null);
 	const words = [
 		{
 			text: "Welcome",
-			className:"text-3xl text-blue-500 dark:text-blue-500  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
+			className:
+				"text-3xl text-blue-500 dark:text-blue-500  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none",
 		},
 		{
 			text: " To",
-			className:"text-3xl  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
+			className:
+				"text-3xl  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none",
 		},
 		{
 			text: " Amazing",
-			className:"text-3xl  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
+			className:
+				"text-3xl  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none",
 		},
 		{
 			text: " Blog",
-			className:"text-3xl text-blue-500 dark:text-blue-500  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
-		}
-		
+			className:
+				"text-3xl text-blue-500 dark:text-blue-500  font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none",
+		},
 	];
+
+	const scrollToSection = () => {
+		if (sectionRef.current) {
+			const yOffset = -70; // Adjust this value based on your navbar height
+			const y =
+				sectionRef.current.getBoundingClientRect().top +
+				window.scrollY  +
+				yOffset;
+			window.scrollTo({ top: y, behavior: "smooth" });
+		}
+	};
 
 	return (
 		<>
@@ -44,8 +61,11 @@ export default function Home() {
 						<div className=" px-4 md:px-6">
 							<div className="flex flex-col items-center space-y-4 text-center">
 								<div className="lg:space-y-9">
-									
-									<TypewriterEffectSmooth cursorClassName=" h-8  " className=" flex justify-center text-center mx-auto"  words={words} />
+									<TypewriterEffectSmooth
+										cursorClassName=" h-8  "
+										className=" flex justify-center text-center mx-auto"
+										words={words}
+									/>
 									<p className="mx-auto max-w-[700px]  md:text-xl">
 										Discover insightful articles, expert
 										opinions, and the latest trends in
@@ -60,9 +80,9 @@ export default function Home() {
 									</Button>
 									{/* <Button variant="outline">Learn More</Button> */}
 
-									<a href="#about">
+									<div onClick={scrollToSection}>
 										<HoverBorderGradientDemo children="Learn More" />
-									</a>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -105,6 +125,7 @@ export default function Home() {
 				</section>
 
 				<section
+					ref={sectionRef}
 					id="about"
 					className="w-full   md:py-24 lg:py-32">
 					<div className="flex flex-col lg:flex-row items-center justify-center text-center lg:text-start space-y-16 lg:space-x-20 px-10 pt-2 pb-10 lg:pt-6 lg:pb-24">
