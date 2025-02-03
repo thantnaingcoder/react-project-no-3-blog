@@ -63,8 +63,7 @@ export function UserAuthForm({ ...props }: UserAuthFormProps) {
 
 		try {
 			setIsLoading(true);
-			const response = await fetch("http://localhost:3000/login", {
-				// Intentionally incorrect URL
+			const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/login`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

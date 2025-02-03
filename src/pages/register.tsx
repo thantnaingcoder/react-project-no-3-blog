@@ -37,8 +37,7 @@ export default function RegisterPage() {
 
     try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:3000/register", {
-            // Intentionally incorrect URL
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

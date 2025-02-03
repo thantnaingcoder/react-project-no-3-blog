@@ -1,4 +1,3 @@
-
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -49,7 +48,7 @@ export default function UserProfilePage() {
 
   const nav = useNavigate();
 	const { toast } = useToast()
-	const {data, error ,isLoading} = useSWR("http://localhost:3000/getUserDetail",fetcher)
+	const {data, error ,isLoading} = useSWR(`${import.meta.env.VITE_API_BASE_URL}/getUserDetail`,fetcher)
    
    const currentUser = data?.currentUser
    const userBlogs = data?.blogs.slice(-4).reverse()

@@ -1,7 +1,6 @@
 import Skeleton from "@/components/skeleton";
 
-import { useState } from "react";
-import { PlaceholdersAndVanishInput } from "../../src/components/ui/placeholders-and-vanish-input";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { getCookie } from "react-use-cookie";
@@ -14,6 +13,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import useDebounce from "@/hooks/useDebounce";
+import { PlaceholdersAndVanishInput } from "../../src/components/ui/placeholders-and-vanish-input";
 
 interface BlogPost {
   id: number;
@@ -53,29 +54,14 @@ function timeAgo(dateString: string) {
   }
 }
 
-// lib/fetcher.js
-const fetcher = (url: string) => {
-  const token = getCookie("my_token");
-
-  return fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  }).then((res) => {
-    if (!res.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return res.json();
-  });
-};
-
 export default function Posts() {
   const parm = useParams();
   const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
   const nav = useNavigate();
+
+  const debouncedSearchTerm = useDebounce(query, 500);
 
   const placeholders = [
     "javascript",
@@ -87,26 +73,60 @@ export default function Posts() {
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setQuery(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
     setShow(true);
   };
 
   const { data, error, isLoading } = useSWR(
-    `http://localhost:3000/blog?page=${currentPage}`,
-    fetcher
+    debouncedSearchTerm && debouncedSearchTerm.length >= 1
+      ? `${import.meta.env.VITE_API_BASE_URL}/blog/search?query=${encodeURIComponent(debouncedSearchTerm)}`
+      : `${import.meta.env.VITE_API_BASE_URL}/blog?page=${currentPage}`,
+    async (url) => {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${getCookie("my_token")}`,
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch data');
+        }
+        
+        const data = await response.json();
+        console.log('API Response:', { url, data });
+        return data;
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
   );
 
   const handlePageChange = (pageNumber: number) => {
+    if (debouncedSearchTerm) {
+      return; // Don't change pages during search
+    }
     setCurrentPage(pageNumber);
   };
 
   const totalPages = data?.pagination?.totalPages || 1;
+
+  const getVisiblePages = (currentPage: number, totalPages: number) => {
+    if (totalPages <= 5) return [...Array(totalPages)].map((_, i) => i + 1);
+    
+    if (currentPage <= 3) return [1, 2, 3, 4, '...', totalPages];
+    if (currentPage >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  };
 
   return (
     <div className="container mx-auto mt-20  lg:px-4 z-0 lg:py-8">
@@ -162,34 +182,49 @@ export default function Posts() {
       </div>
 
       {/* pagination */}
-      <div className="my-5">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index + 1}>
-                <PaginationLink
-                  onClick={() => handlePageChange(index + 1)}
-                  className={currentPage === index + 1 ? "bg-blue-100" : "cursor-pointer"}
-                >
-                  {index + 1}
+      {!debouncedSearchTerm && data?.pagination && (
+        <div className="my-5 overflow-x-auto">
+          <Pagination>
+            <PaginationContent className="flex flex-wrap justify-center gap-1 px-2">
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                  className={`${currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} sm:px-4 px-2`}
+                />
+              </PaginationItem>
+              
+              {getVisiblePages(currentPage, totalPages).map((pageNum, index) => (
+                <PaginationItem key={index} className="hidden sm:block">
+                  {pageNum === '...' ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      onClick={() => handlePageChange(pageNum as number)}
+                      className={`${currentPage === pageNum ? "bg-blue-100" : "cursor-pointer"} min-w-[32px] flex justify-center`}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+
+              {/* Mobile version - just show current page */}
+              <PaginationItem className="sm:hidden">
+                <PaginationLink className="bg-blue-100">
+                  {currentPage} / {totalPages}
                 </PaginationLink>
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                className={currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                  className={`${currentPage >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} sm:px-4 px-2`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

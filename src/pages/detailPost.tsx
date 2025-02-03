@@ -42,7 +42,7 @@ const fetcher = (url: string) => {
 
 export default function BlogDetail() {
   const id = useParams().id
-  const {data, error ,isLoading} = useSWR(`http://localhost:3000/blog/${id}`,fetcher)
+  const {data, error ,isLoading} = useSWR(`${import.meta.env.VITE_API_BASE_URL}/blog/${id}`,fetcher)
    
   return (
      <>
