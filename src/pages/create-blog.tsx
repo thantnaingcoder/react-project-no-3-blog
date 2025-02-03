@@ -7,11 +7,11 @@ import { Icons } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
-import Editor from "@/components/editor";
+import { getCookie } from "react-use-cookie";
 export default function CreateBlog() {
 	const formData = new FormData();
 	const nav = useNavigate();
-	const token = localStorage.getItem("token");
+	const token = getCookie("my_token");
 	const { toast } = useToast();
 	const [file, setFile] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -24,23 +24,23 @@ export default function CreateBlog() {
 		author: "",
 	});
 
-	const handleInputChange = e => {
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setData(prev => ({ ...prev, [name]: value }));
 	};
 
-	const handlePhotoChange = e => {
+	const handlePhotoChange = (e:{ target: { files: any[]; }; }) => {
 		const file = e.target.files[0];
 
 		setData(prev => ({ ...prev, photo: file }));
 		setFile(file);
 	};
 
-	const handleSubmit = async e => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
         setLoading(true);
 
-		formData.append("file", file);
+		formData.append("file", file );
 		formData.append("upload_preset", "blogs-photo"); // Replace with your Cloudinary upload preset
 		
         

@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { Icons } from "@/components/icons";
 import { Button } from '@/components/ui/button'
+import useCookie from "react-use-cookie";
 import { BackgroundGradientDemo } from '@/components/background-gradient'
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -15,8 +16,8 @@ export default function LoginPage() {
     keepLoggedIn: false
   })
   
-  console.log(formData)
-
+ 
+  const [token, setToken] = useCookie("my_token");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [error, setError] = React.useState<object>();
 	const nav = useNavigate();
@@ -68,6 +69,7 @@ export default function LoginPage() {
 
 				if (token) {
 					localStorage.setItem("token", token);
+          setToken(token);
 					
 				}
 				toast({

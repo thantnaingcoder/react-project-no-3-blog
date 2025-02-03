@@ -1,9 +1,10 @@
 import Skeleton from "@/components/skeleton";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+
+import {  useState } from "react";
 import { PlaceholdersAndVanishInput } from "../../src/components/ui/placeholders-and-vanish-input";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
+import { getCookie } from "react-use-cookie";
 import {
 	Pagination,
 	PaginationContent,
@@ -105,7 +106,7 @@ function timeAgo(dateString: string) {
 
 // lib/fetcher.js
 const fetcher = (url: string ) => {
-	const token = localStorage.getItem("token");
+	const token =getCookie("my_token");
 
 	return fetch(url, {
 		headers: {
@@ -178,7 +179,7 @@ export default function Posts() {
 						<Skeleton key={index} />
 					))}
 
-				{data?.data?.map(post => (
+				{data?.data?.map(post  => (
 					<article
 						onClick={() => nav(`/post/${post.id}`)}
 						key={post.id}

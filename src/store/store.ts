@@ -1,11 +1,10 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
-const useStore = create((set) => ({
+const useTokenStore = create((set) => ({
   token: "",
-  addToken: (token:string) => set(() => ({  token })),
-  removeToken: () => set({ token: "" }),
-  
-}))
+  setToken: (token: string) => set({ token }),
+  resetToken: () => set({ token: "" }),
+}));
 
-export default useStore;
+export default useTokenStore;
  

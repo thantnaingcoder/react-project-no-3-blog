@@ -1,11 +1,11 @@
 import { ModeToggle } from "@/components/mode-toggle";
 
-import { Home, BookOpen, Mail, ArrowRight } from "lucide-react";
+import {  BookOpen } from "lucide-react";
 
 
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet,  useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "./components/theme-provider";
-import { useToast } from "@/hooks/use-toast"
+
 import ScrollNav from "./components/scroll";
 
 
