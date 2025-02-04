@@ -14,31 +14,45 @@ export default function CreateBlog() {
   const nav = useNavigate();
   const token = getCookie("my_token");
   const { toast } = useToast();
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [data, setData] = useState({
+  const [data, setData] = useState<{
+    photo: File | null;
+    title: string;
+    content: string;
+    author: string;
+  }>({
     photo: null,
     title: "",
     content: "",
     author: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePhotoChange = (e: { target: { files: any[] } }) => {
-    const file = e.target.files[0];
-
-    setData((prev) => ({ ...prev, photo: file }));
-    setFile(file);
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setData((prev) => ({ ...prev, photo: file }));
+      setFile(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!file) {
+      toast({
+        title: "Please select a file",
+      });
+      setLoading(false);
+      return;
+    }
 
     formData.append("file", file);
     formData.append("upload_preset", "blogs-photo"); // Replace with your Cloudinary upload preset
@@ -90,16 +104,18 @@ export default function CreateBlog() {
             author: "",
           });
         } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "An error occurred";
           toast({
-            title: error,
+            title: errorMessage,
           });
         }
       }
     } catch (error) {
       setLoading(false);
       console.log(error);
+      const errorMessage = error instanceof Error ? error.message : "An error occurred";
       toast({
-        title: error.message,
+        title: errorMessage,
       });
     }
   };

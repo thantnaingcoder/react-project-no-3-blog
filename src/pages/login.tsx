@@ -77,12 +77,8 @@ export default function LoginPage() {
 				setIsLoading(false);
 				nav("/home");
 			}
-		} catch (error ) {
-			// Catch and log any error
-			console.error("An error occurred:", error.message);
-			// toast({
-			// 	title: error.message,
-			// });
+		} catch (error) {
+			console.error("An error occurred:", error instanceof Error ? error.message : "Unknown error");
 			setIsLoading(false);
 		}
   }

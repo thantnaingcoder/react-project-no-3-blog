@@ -34,7 +34,7 @@ interface Blog {
 function timeAgo(dateString: string) {
   const postDate = new Date(dateString);
   const now = new Date();
-  const diffInSeconds = Math.floor((now - postDate) / 1000);
+  const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000);
 
   const secondsInMinute = 60;
   const secondsInHour = 3600;
@@ -82,32 +82,34 @@ export default function Posts() {
     setShow(true);
   };
 
+  const fetcher = async (url: string) => {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${getCookie("my_token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch data');
+      }
+      
+      const data = await response.json();
+      
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  };
+
   const { data, error, isLoading } = useSWR(
     debouncedSearchTerm && debouncedSearchTerm.length >= 1
       ? `${import.meta.env.VITE_API_BASE_URL}/blog/search?query=${encodeURIComponent(debouncedSearchTerm)}`
       : `${import.meta.env.VITE_API_BASE_URL}/blog?page=${currentPage}`,
-    async (url) => {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${getCookie("my_token")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch data');
-        }
-        
-        const data = await response.json();
-        console.log('API Response:', { url, data });
-        return data;
-      } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-      }
-    }
+    fetcher
   );
 
   const handlePageChange = (pageNumber: number) => {
@@ -150,7 +152,7 @@ export default function Posts() {
             <Skeleton key={index} />
           ))}
 
-        {data?.data?.map((post) => (
+        {data?.data?.map((post: any) => (
           <article
             onClick={() => nav(`/post/${post.id}`)}
             key={post.id}

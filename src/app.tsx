@@ -2,8 +2,6 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import Layout from "./layout";
 import Home from "./pages/home";
-import Auth from "./pages/auth";
-import Register from "./pages/signUp";
 import CreateBlog from "./pages/create-blog";
 import Posts from "./pages/posts";
 

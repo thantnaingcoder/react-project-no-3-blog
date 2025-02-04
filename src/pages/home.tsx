@@ -95,7 +95,7 @@ export default function Home() {
 						</h2>
 						<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 							{[1, 2, 3].map(i => (
-								<BackgroundGradientDemo key={i}>
+								
 									<Card className=" rounded-3xl">
 										<CardHeader>
 											<CardTitle>
@@ -118,7 +118,7 @@ export default function Home() {
 											</a>
 										</CardFooter>
 									</Card>
-								</BackgroundGradientDemo>
+								
 							))}
 						</div>
 					</div>
