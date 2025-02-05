@@ -13,7 +13,7 @@ import { BookOpen, Mail, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BackgroundBeamsDemo } from "@/components/animation-line";
 import { HoverBorderGradientDemo } from "@/components/hover-border";
-import { BackgroundGradientDemo } from "@/components/background-gradient";
+
 import { useRef } from "react";
 
 export default function Home() {
@@ -141,7 +141,7 @@ export default function Home() {
 							</div>
 						</div>
 						<div className="max-w-xl">
-							<p className="font-bold text-4xl mb-4">
+							<p className="font-bold text-4xl mt-10 mb-4">
 								Creater of Amazing Blog
 							</p>
 							<p className="leading-[2] text-base">

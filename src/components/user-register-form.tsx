@@ -14,7 +14,7 @@ type Inputs = { name : string,email: string ,password: string};
 
 export  function UserRegisterForm({ ...props }: UserAuthFormProps) {
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
-	const [error,setError] = React.useState<boolean>(false);
+	const [_,setError] = React.useState<boolean>(false);
     const {toast} = useToast();
 	const nav= useNavigate()
 	const {

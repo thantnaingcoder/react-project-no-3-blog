@@ -48,7 +48,7 @@ export default function UserProfilePage() {
 
   const nav = useNavigate();
 	const { toast } = useToast()
-	const {data, error ,isLoading} = useSWR(`${import.meta.env.VITE_API_BASE_URL}/getUserDetail`,fetcher)
+	const {data, error ,isLoading} = useSWR(`${import.meta.env.VITE_API_BASE_URL}/auth/getUserDetail`,fetcher)
    
    const currentUser = data?.currentUser
    const userBlogs = data?.blogs.slice(-4).reverse()
